@@ -11,8 +11,6 @@ os.environ['PYSPARK_PYTHON'] = sys.executable
 os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
 # MAP AND REDUCE FUNCTIONS
-
-
 def count_words_doc (doc, random_partitioning=False, N_partitions=-1):
     """
     count words in a document (map function)
@@ -24,6 +22,9 @@ def count_words_doc (doc, random_partitioning=False, N_partitions=-1):
         a list of (word, count) pairs if random_partitioning is False
         a list of (random_key, (word, count)) pairs if random_partitioning is True
     """
+    # note that, contrary to the theoretical bg of mapreduce, spark does not force to 
+    # use pairs as inpout, indeed we are using a list of strings  
+
     # word count per document
     word_counts={}
     # split the document into words
@@ -72,8 +73,6 @@ def gather_pairs(pairs, partitioning=False):
             pairs_dict[word] += occurrences
     return [(key, pairs_dict[key]) for key in pairs_dict.keys()]
 
-
-
 # MAPREDUCE ALGORITHMS
 
 def one_round_wc (docs):
@@ -90,7 +89,7 @@ def one_round_wc (docs):
     # reduceByKey: merge the values for each key using an associative and commutative reduce function.
     return docs.flatMap(count_words_doc).reduceByKey(lambda x, y: x+y)
 
-def two_rounds(docs, N_partitions, groupby_key=False):
+def two_rounds_wc(docs, N_partitions, groupby_key=False):
     """
     two rounds of word count, implements random partitioning
     args:
@@ -109,6 +108,7 @@ def two_rounds(docs, N_partitions, groupby_key=False):
                         .flatMap(lambda x: gather_pairs(x, False))   # REDUCE PHASE (R1)
                         .reduceByKey(lambda x, y: x + y))             # REDUCE PHASE (R2)
     else:
+        # groupby generate a key and grop by that key
         wc = (docs.flatMap(count_words_doc) # MAP PHASE (R1)
                     .groupBy(lambda x: (rand.randint(0,N_partitions-1))) # SHUFFLE+GROUPING
                     .flatMap(gather_pairs)                    # REDUCE PHASE (R1)

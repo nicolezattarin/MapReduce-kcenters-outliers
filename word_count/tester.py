@@ -55,14 +55,14 @@ def main():
 
     # TWO ROUNDS, groupkey
     t = time.time()
-    counts = two_rounds(docs, K, groupby_key=True).count()
+    counts = two_rounds_wc(docs, K, groupby_key=True).count()
     print("\n\nTWO ROUND RANDOM GR")
     print("NUMBER OF WORDS = ", counts)
     print("TIME = {:.2f}".format(time.time() - t))
 
     # TWO ROUNDS, SHUFFLE WITH KEY
     t = time.time()
-    counts = two_rounds(docs, K, groupby_key=False).count()
+    counts = two_rounds_wc(docs, K, groupby_key=False).count()
     print("\n\nTWO ROUND RANDOM NO GROUPKEY")
     print("NUMBER OF WORDS = ", counts)
     print("TIME = {:.2f}".format(time.time() - t))
