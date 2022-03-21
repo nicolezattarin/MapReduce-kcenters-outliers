@@ -17,13 +17,13 @@ def main():
 
     assert len(sys.argv) == 3, "Usage: python WordCountExample.py <number of file partitions> <file_name>"
     # SPARK SETUP
-    print("Setting up SparkContext...")
+    print("\n\nSetting up SparkContext...")
     conf = SparkConf().setAppName('WordCountExample').setMaster("local[*]")
     sc = SparkContext(conf=conf)
 
     # Read number of partitions
     K = sys.argv[1]
-    assert K.isdigit(), "Number of partitions must be a positive integer"
+    assert K.isdigit(), "\n\nNumber of partitions must be a positive integer"
     K = int(K)
     print ("Number of partitions required = ", K)
 
@@ -51,9 +51,41 @@ def main():
     counts = one_round_wc(docs).count()
     print("\n\nONE ROUND NO PARTITIONING")
     print("NUMBER OF WORDS = ", counts)
-    print("TIME = ", time.time() - t)
+    print("TIME = {:.2f}".format(time.time() - t))
+
+    # TWO ROUNDS, groupkey
+    t = time.time()
+    counts = two_rounds(docs, K, groupby_key=True).count()
+    print("\n\TWO ROUND RANDOM GR")
+    print("NUMBER OF WORDS = ", counts)
+    print("TIME = {:.2f}".format(time.time() - t))
+
+    # TWO ROUNDS, SHUFFLE WITH KEY
+    t = time.time()
+    counts = two_rounds(docs, K, groupby_key=False).count()
+    print("\n\TWO ROUND RANDOM NO GROUPKEY")
+    print("NUMBER OF WORDS = ", counts)
+    print("TIME = {:.2f}".format(time.time() - t))
+
+    # TWO ROUNDS, PARTITIONING
+    t = time.time()
+    counts = count_words_partitioning(docs).count()
+    print("\n\ PARTITIONING")
+    print("NUMBER OF WORDS = ", counts)
+    print("TIME = {:.2f}".format(time.time() - t))
+
+    # GET LIST OF PAIRS (using last implementation)
+    wp = count_words_partitioning(docs)
+    print ("\n\nLIST OF PAIRS as RDD")
+    print (wp.take(10))
+
+    print ("\n\nLIST OF PAIRS as LIST")
+    wp_list = wp.collect()
+    print (wp_list[:10])
+
+    # AVERAGE LENGTH OF WORDS
+    print ("\n\nAVERAGE LENGTH OF WORDS = ", wp.map(lambda x: len(x[0])).mean())
 
 
-    
 if __name__ == '__main__':
     main()
