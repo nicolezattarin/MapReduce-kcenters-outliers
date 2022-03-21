@@ -4,9 +4,9 @@ tester.py implements a function that, given a txt file containing words and the 
 Different algorithms to perform the same task are provided in word_count.py.
 
 In particular consider the following examples of applications on a trivial dataset:
+
 <p align="left">
 <img src="figs/ex1.png"  width="00"/> </p>
-
 
 
 <p align="left">
