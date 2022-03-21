@@ -56,32 +56,38 @@ def main():
     # TWO ROUNDS, groupkey
     t = time.time()
     counts = two_rounds(docs, K, groupby_key=True).count()
-    print("\n\TWO ROUND RANDOM GR")
+    print("\n\nTWO ROUND RANDOM GR")
     print("NUMBER OF WORDS = ", counts)
     print("TIME = {:.2f}".format(time.time() - t))
 
     # TWO ROUNDS, SHUFFLE WITH KEY
     t = time.time()
     counts = two_rounds(docs, K, groupby_key=False).count()
-    print("\n\TWO ROUND RANDOM NO GROUPKEY")
+    print("\n\nTWO ROUND RANDOM NO GROUPKEY")
     print("NUMBER OF WORDS = ", counts)
     print("TIME = {:.2f}".format(time.time() - t))
 
     # TWO ROUNDS, PARTITIONING
     t = time.time()
     counts = count_words_partitioning(docs).count()
-    print("\n\ PARTITIONING")
+    print("\n\n PARTITIONING")
     print("NUMBER OF WORDS = ", counts)
     print("TIME = {:.2f}".format(time.time() - t))
 
     # GET LIST OF PAIRS (using last implementation)
     wp = count_words_partitioning(docs)
-    print ("\n\nLIST OF PAIRS as RDD")
+    print ("\n\nPAIRS as RDD")
     print (wp.take(10))
 
-    print ("\n\nLIST OF PAIRS as LIST")
+    print ("\n\nPAIRS as LIST")
     wp_list = wp.collect()
     print (wp_list[:10])
+
+    print ("\n\nPAIRS as DICT (sorted)")
+    wp_dict = wp.collectAsMap()
+    sorted_dict = [(k, wp_dict[k]) for k in sorted(wp_dict, key=wp_dict.get, reverse=True)]
+    print (sorted_dict[:10])
+
 
     # AVERAGE LENGTH OF WORDS
     print ("\n\nAVERAGE LENGTH OF WORDS = ", wp.map(lambda x: len(x[0])).mean())
