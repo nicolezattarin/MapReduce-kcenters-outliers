@@ -12,3 +12,6 @@ In particular consider the following examples of applications on a trivial datas
 <p align="left">
 <img src="figs/ex2.png"  width="800"/> </p>
 
+
+<p align="left">
+<img src="figs/ex3.png"  width="800"/> </p>
