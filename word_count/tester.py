@@ -25,7 +25,7 @@ def main():
     K = sys.argv[1]
     assert K.isdigit(), "\n\nNumber of partitions must be a positive integer"
     K = int(K)
-    print ("Number of partitions required = ", K)
+    print ("\n\nNumber of partitions required = ", K)
 
     # Read input file 
     data_path = sys.argv[2]
@@ -39,7 +39,7 @@ def main():
     # docs is my RDD with data
     docs = sc.textFile(data_path, minPartitions=K).cache() #min k partitions
     docs.repartition(numPartitions=K) # exactly K partitions
-    print("Number of partitions = ", docs.getNumPartitions())
+    print("\n\nNumber of partitions = ", docs.getNumPartitions())
     print("Document loaded")
 
     # global variables
@@ -91,6 +91,8 @@ def main():
 
     # AVERAGE LENGTH OF WORDS
     print ("\n\nAVERAGE LENGTH OF WORDS = ", wp.map(lambda x: len(x[0])).mean())
+    print ("Longes word = ", wp.map(lambda x: len(x[0])).max(), )
+    print ("Shortest word = ", wp.map(lambda x: len(x[0])).min())
 
 
 if __name__ == '__main__':
