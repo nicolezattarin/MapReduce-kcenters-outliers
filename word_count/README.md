@@ -6,7 +6,7 @@ Different algorithms to perform the same task are provided in word_count.py.
 In particular consider the following examples of applications on a trivial dataset:
 
 <p align="left">
-<img src="figs/ex1.png"  width="00"/> </p>
+<img src="figs/ex1.png"  width="800"/> </p>
 
 
 <p align="left">
