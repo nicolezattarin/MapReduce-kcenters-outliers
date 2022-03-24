@@ -1,0 +1,4 @@
+Number of rows = 10000
+Product-Customer Pairs = 9104
+Top 5 Products and their Popularities
+Product POST Popularity 91; Product 22423 Popularity 91; Product 85123A Popularity 86; Product 47566 Popularity 84; Product 85099B Popularity 70; 

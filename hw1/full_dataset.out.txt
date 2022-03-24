@@ -1,0 +1,4 @@
+Number of rows = 406829
+Product-Customer Pairs = 238053
+Top 5 Products and their Popularities
+Product 85123A Popularity 821; Product 22423 Popularity 767; Product 47566 Popularity 659; Product 84879 Popularity 642; Product 22086 Popularity 594; 

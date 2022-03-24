@@ -1,0 +1,6 @@
+Number of rows = 50
+Product-Customer Pairs = 11
+productPopularity1: 
+Product: 21733 Popularity: 2; Product: 22632 Popularity: 1; Product: 22960 Popularity: 4; Product: 22961 Popularity: 2; Product: 22969 Popularity: 1; Product: 84879 Popularity: 1; 
+productPopularity2: 
+Product: 21733 Popularity: 2; Product: 22632 Popularity: 1; Product: 22960 Popularity: 4; Product: 22961 Popularity: 2; Product: 22969 Popularity: 1; Product: 84879 Popularity: 1; 
