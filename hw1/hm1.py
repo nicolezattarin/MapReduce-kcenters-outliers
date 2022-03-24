@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from pyspark import SparkContext, SparkConf
 import sys, os
 
@@ -89,7 +88,7 @@ def main():
                                             .mapValues(sum)
 
     # DEBUG - prints the first 10 rows of the RDD
-    print("\n\nDistinct ProductID (1) =", productPopularity1.count())
+    # print("\n\nDistinct ProductID (1) =", productPopularity1.count())
 
     # Repeats the operation of the previous point using a combination of map/mapToPair 
     # and reduceByKey methods (instead of mapPartitionsToPair/mapPartitions) and calling the resulting RDD productPopularity2.
@@ -97,17 +96,26 @@ def main():
     productPopularity2 = productPopularity2.map(lambda line: (line[0], 1))\
                                             .groupByKey()\
                                             .map(lambda line: (line[0], sum(line[1])))
+
     # DEBUG - prints the first 10 rows of the RDD
-    print("\n\nDistinct ProductID (2) =", productPopularity1.count())
+    # print("\n\nDistinct ProductID (2) =", productPopularity1.count())
 
     # Saves in a list and prints the ProductID and Popularity of the H products 
     # with highest Popularity. (Extracts these data from productPopularity1. )
+    if H > productPopularity1.count():
+        raise ValueError ("H is greater than the number of distinct products")
+
     if H > 0:
-        print("\n\nH =", H, "products with highest Popularity:")
+        print("\n\nH =", H, "(1) products with highest Popularity:")
         productPopularity1 = productPopularity1.sortBy(lambda line: line[1], ascending=False)
         productPopularity1 = productPopularity1.take(H)
         for i in range(H):
             print(productPopularity1[i][0], ":", productPopularity1[i][1])
+        print ("\n\nH =", H, "(2) products with highest Popularity:")
+        productPopularity2 = productPopularity2.sortBy(lambda line: line[1], ascending=False)
+        productPopularity2 = productPopularity2.take(H)
+        for i in range(H):
+            print(productPopularity2[i][0], ":", productPopularity2[i][1])
     
     # (This step, for debug purposes, is executed only if H=0) Collects all pairs of productPopularity1 
     # into a list and print all of them, in increasing lexicographic order of ProductID. 
@@ -117,7 +125,7 @@ def main():
         productPopularity2 = sorted(productPopularity2.collect(), key = lambda x: x[0])
         print("\n\nAll ProductID (1):\n", productPopularity1)
         print("\n\nAll ProductID (2):\n", productPopularity2)
-    print('\n\n')
+    print('\n')
 
 if __name__ == '__main__':
     main()
