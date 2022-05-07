@@ -1,8 +1,8 @@
 import numpy as np
 import sys
-from kcenters import SeqWeightedOutliers
 import os
-from kcenters import euclidean
+from kcenters import SeqWeightedOutliers
+from kcenters import euclidean, GetRGlobal, GetGuessesGlobal
 """
 command-line (CLI) arguments: 
     A path to a text file containing point set in Euclidean space. 
@@ -52,7 +52,6 @@ def main ():
     # Run SeqWeightedOutliers(inputPoints,weights,k,z,0) to compute a set of (at most) k centers. 
     # The output of the method must be saved into a list of tuple called solution.
     import time
-    r, guesses = 0, 0
     t0 = time.time()
     solution = SeqWeightedOutliers(inputPoints,weights,k,z, 0)
     alg_time = time.time() - t0
@@ -61,27 +60,20 @@ def main ():
     P = inputPoints[:k+z+1]
     from scipy.spatial import distance 
     rInit = (min(np.extract(1-np.eye(len(P)), distance.cdist(P, P)).flatten()) / 2)
-    rFinal = r
-    totGuesses = guesses
-
 
     # Run ComputeObjective(inputPoints,solution,z) and save the output in a variable called objective.
     from kcenters import ComputeObjective
     objective = ComputeObjective(inputPoints,solution,z)
 
-    #Return as output the following quantities: 
-    # |P|, k, z, 
-    # the initial guess made by SeqWeightedOutliers(inputPoints,weights,k,z,0), 
-    # the value objective
-    # the time (in milliseconds) required by the execution of SeqWeightedOutliers(inputPoints,weights,k,z,0). 
+    # output
     print("Input size n = {}".format(len(inputPoints)))
     print("Number of centers k = {}".format(k))
     print("Number of outliers z = {}".format(z))
     print("Initial guess = {}".format(rInit))
-    print("Final guess = {}".format(r))
-    print("Number of guesses = {}".format(guesses))
+    print("Final guess = {}".format(GetRGlobal()))
+    print("Number of guesses = {}".format(GetGuessesGlobal()))
     print("Objective function = {}".format(objective))
-    print("Time of SeqWeightedOutliers = {}".format(alg_time*1000))
+    print("Time of SeqWeightedOutliers = {}".format(alg_time))
 
 if __name__ == "__main__":
     main()

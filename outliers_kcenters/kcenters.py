@@ -18,19 +18,25 @@ REPRESENTATION of POINTS: Euclidean space (real cooordinates) and with the Eucli
 
 """
 import numpy as np
+import sys
+import os
+import numpy as np
 
 """
-Develop a method SeqWeightedOutliers(P,W,k,z,alpha) which implements the weighted variant of 
+Develop a method SeqWeightedOutliers(P,Weights,k,z,alpha) which implements the weighted variant of 
 kcenterOUT (the 3-approximation algorithm for k-center with z-outliers). 
 
-The method takes as input the set of points P, the set of weights W, the number of centers k, 
+The method takes as input the set of points P, the set of weights Weights, the number of centers k, 
 the number of outliers z, and the coefficient alpha used by the algorithm, a
 nd returns the set of centers S computed as specified by the algorithm. 
-guesses is understood that the i-th integer in W is the weight of the i-th point in P. 
-Python users: represent P and S as list of tuple and W as list of integers. 
+guesses is understood that the i-th integer in Weights is the weight of the i-th point in P. 
+Python users: represent P and S as list of tuple and Weights as list of integers. 
 Considering the algorithm's high complexity, try to make the implementation as efficient as possible.  
 """
-def euclidean(point1,point2):
+def euclidean(point1, point2):
+    """
+    Euclidean distance between two points.
+    """
     import math
     res = 0
     for i in range(len(point1)):
@@ -42,85 +48,100 @@ def euclidean(point1,point2):
 
 def ball(x, R, Set):
     """
-    returns a list of points in the ball of radius r around x
+    returns a list of points in the ball of radius R around x, the result is a subset of Set
     """
-    mask = np.array([euclidean(p, x) for p in Set]) < R
+    mask = np.array([euclidean(p, x) for p in Set]) <= R # mask of the points in the ball
+
     from itertools import compress
     return list(compress(Set, mask))
 
-def SeqWeightedOutliers(P, W, k, z, alpha, maxiter=1000, verbose=True):
+def SeqWeightedOutliers(inputPoints, Weights, k, z, alpha, maxiter=1000, verbose=False):
     """
     returns the set of centers S computed as specified by the algorithm
-    P list of tuples
-    W list of int
+    inputPoints (list of tuples): input points
+    Weights (list of int): weights of the points
     """
     # min distance between first k+z+1 points and the centers
     from scipy.spatial import distance 
-    pp = P[:k+z+1]
+    pp = inputPoints[:k+z+1]
 
-    global r, guesses # global variables to modify the values called in the main
-
+    global r # global variables to modify the values called in the main
     # DEBUG
     r = (min(np.extract(1-np.eye(len(pp)), distance.cdist(pp, pp)).flatten()) / 2)
     if verbose: print("r = ", r)
 
+    global guesses 
     guesses = 1
     while guesses < maxiter:
         if verbose: print ('iteration:', guesses)
+
         import copy
-        Z = copy.copy(P)
-        S = []
-        W_Z = np.sum(W)
-        while len(S) < k and W_Z > 0:
+        Z = copy.copy(inputPoints) # set of uncovered points, it is initialized with the entire set of points
+        S = []                     # set of centers, it is initialized empty and it will be a list of tuples
+        W_Z = np.sum(Weights)      # sum of weights of uncovered points, 
+                                   # initialized as sum of the weights of the entire dataset
+
+        while len(S) < k and W_Z > 0: # while we didnt fill the set of centers and there are uncovered points
             if verbose: print ('\nlen(S):', len(S))
             max = 0
-            for x in P:
-                ball_points = ball(x, (1+2*alpha)*r, Z) #check this out (im assuming all elements are different)
-                ball_weight = np.sum((W[P.index(b)] for b in ball_points))#check this out
+            for x in inputPoints: # for each point in the set 
+                # find the points in Z which are in a ball centered at x with radius (1+2*alpha)*r
+                ball_points = ball(x, (1+2*alpha)*r, Z) #check this out (im assuming each point occurs only once)
+                ball_weight = np.sum((Weights[inputPoints.index(b)] for b in ball_points))
                 
-                if verbose: print ('ball_points:', ball_points, 'ball_weight:', ball_weight, 'max:', max, 'W_Z:', W_Z)
+                if verbose: print ('\nball_points:', ball_points, ' ball_weight:', ball_weight, ' max:', max, ' W_Z:', W_Z)
 
-                # add to S the point ci ∈ P which maximizes the total weight in BZ(ci,(1+2α)r).
-                if ball_weight > max:
+                # add to S the point ci ∈ inputPoints which maximizes the total weight in BZ(ci,(1+2α)r).
+                if ball_weight > max: 
                     max = ball_weight
                     newcenter = x
-                S.append(newcenter)
-                ball_points_newcenter = ball(newcenter, (3+4*alpha)*r, Z)
-                if verbose: print ('ball_points_newcenter:', ball_points_newcenter)
-                for y in ball_points_newcenter:
-                    Z.remove(y)
-                    W_Z -= W[P.index(y)]
-                    if verbose:
-                        print ('y:', y)
-                        print ('Z:', Z)
-                        print ('W_Z:', W_Z)
+                    
+            # add the new center to the set of centers
+            S.append(newcenter)
+            if verbose: print ('S:', S)
+
+            ball_points_newcenter = ball(newcenter, (3+4*alpha)*r, Z)
+            if verbose: print ('ball_points_newcenter:', ball_points_newcenter)
+            for y in ball_points_newcenter:
+                Z.remove(y) # remove points from Z that have been assigned to the new center
+                W_Z -= Weights[inputPoints.index(y)]
+            if verbose:
+                print ('Z:', Z, ' W_Z:', W_Z, '\n')
+
         if W_Z <= z: return S
         else: r*=2
         guesses += 1
     return S
 
+def GetRGlobal():
+    global r
+    return r
 
-# Develop a method ComputeObjective(P,S,z) which computes the value of the objective function 
-# for the set of points P, the set of centers S, and z outliers (the number of centers,
+def GetGuessesGlobal():
+    global guesses
+    return guesses
+
+# Develop a method ComputeObjective(inputPoints,S,z) which computes the value of the objective function 
+# for the set of points inputPoints, the set of centers S, and z outliers (the number of centers,
 #  which is the size of S, is not needed as a parameter). Hint: you may compute all distances d(x,S), 
-# for every x in P, sort them, exclude the z largest distances, and return the largest among the remaining ones. 
+# for every x in inputPoints, sort them, exclude the z largest distances, and return the largest among the remaining ones. 
 # Note that in this case we are not using weights!
 
-def ComputeObjective(P, S, z):
+def ComputeObjective(inputPoints, S, z):
     """
     returns the value of the objective function
-    P list of tuples
+    inputPoints list of tuples
     S list of tuples
     z int
     """
-    # dd = np.zeros(len(inputPoints)*len(inputPoints))
-    # for i in range(len(inputPoints)):
-    #     for j in range(len(inputPoints)):
-    #         dd[i+j] = euclidean(inputPoints[i], inputPoints[j])
-    # d = np.sort(d)
-    # return d[-z]
+    dd = np.zeros(len(inputPoints)*len(inputPoints))
+    for i in range(len(inputPoints)):
+        for j in range(len(inputPoints)):
+            dd[i+j] = euclidean(inputPoints[i], inputPoints[j])
+    dd = np.sort(dd)
+    return dd[-z]
 
     #try numpy version, check which is better?
-    from scipy.spatial import distance 
-    d = np.extract(1-np.eye(len(P)), distance.cdist(P, S)).flatten()
-    return np.partition(d, -z)[-z]
+    # from scipy.spatial import distance 
+    # d = np.extract(1-np.eye(len(inputPoints)+1), distance.cdist(inputPoints, S)).flatten()
+    # return np.partition(d, -z)[-z]
