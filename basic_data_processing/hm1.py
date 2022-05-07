@@ -8,15 +8,11 @@ os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 def filter(line, S):
     if len(line) != 8: raise ValueError ("Wrong number of fields")
     if S != "all":
-        if int(line[3])>0 and line[7]==S:
-            return True
-        else:
-            return False
+        if int(line[3])>0 and line[7]==S:return True
+        else:return False
     else:
-        if int(line[3])>0:
-            return True
-        else:
-            return False
+        if int(line[3])>0:return True
+        else:return False
 
 def count_popularity(partitionData):
     for row in partitionData:
@@ -32,6 +28,8 @@ def main():
     H = int(sys.argv[2])
     S = sys.argv[3]
     path = sys.argv[4]
+
+
     print('K =', K, 'H =', H, 'S =', S, 'path =', path)
     if not os.path.isfile(path): raise ValueError ("File or folder not found")
 
@@ -66,7 +64,9 @@ def main():
     # we select positive quantities and countries that match S
     productCustomer = rawData.map(lambda line: line.split(",")) \
                           .filter(lambda line: filter(line, S)) \
-                          .map(lambda line: (line[1], line[6])) # (ProductID, CustomerID)
+                          .map(lambda line: ((line[1], line[6]),1))\
+                          .reduceByKey(lambda x, y: x)\
+                          .map (lambda line: line[0]) # (ProductID, CustomerID)
 
     # DEBUG - prints the first 10 rows of the RDD
     # print("\n\nFirst 10 rows of the RDD:")
