@@ -56,6 +56,9 @@ def main ():
     solution = SeqWeightedOutliers(inputPoints,weights,k,z, 0)
     alg_time = time.time() - t0
 
+    # DEBUG
+    # print("solution: ", solution)
+
     #initial guess for r
     P = inputPoints[:k+z+1]
     from scipy.spatial import distance 

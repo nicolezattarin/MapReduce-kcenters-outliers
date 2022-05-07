@@ -58,8 +58,15 @@ def ball(x, R, Set):
 def SeqWeightedOutliers(inputPoints, Weights, k, z, alpha, maxiter=1000, verbose=False):
     """
     returns the set of centers S computed as specified by the algorithm
-    inputPoints (list of tuples): input points
-    Weights (list of int): weights of the points
+
+    params:
+    ::inputPoints (list of tuples): input points
+    ::Weights (list of int): weights of the points
+    ::k (int): number of centers
+    ::z (int): number of outliers
+    ::alpha (float): coefficient used by the algorithm
+    ::maxiter (int): maximum number of iterations
+    ::verbose (bool): if true, prints logs
     """
     # min distance between first k+z+1 points and the centers
     from scipy.spatial import distance 
@@ -121,27 +128,24 @@ def GetGuessesGlobal():
     global guesses
     return guesses
 
-# Develop a method ComputeObjective(inputPoints,S,z) which computes the value of the objective function 
-# for the set of points inputPoints, the set of centers S, and z outliers (the number of centers,
-#  which is the size of S, is not needed as a parameter). Hint: you may compute all distances d(x,S), 
-# for every x in inputPoints, sort them, exclude the z largest distances, and return the largest among the remaining ones. 
-# Note that in this case we are not using weights!
 
 def ComputeObjective(inputPoints, S, z):
     """
-    returns the value of the objective function
-    inputPoints list of tuples
-    S list of tuples
-    z int
-    """
-    dd = np.zeros(len(inputPoints)*len(inputPoints))
-    for i in range(len(inputPoints)):
-        for j in range(len(inputPoints)):
-            dd[i+j] = euclidean(inputPoints[i], inputPoints[j])
-    dd = np.sort(dd)
-    return dd[-z]
+    Computes the value of the objective function for the set of points inputPoints, 
+    the set of centers S, and z outliers.
 
-    #try numpy version, check which is better?
-    # from scipy.spatial import distance 
-    # d = np.extract(1-np.eye(len(inputPoints)+1), distance.cdist(inputPoints, S)).flatten()
-    # return np.partition(d, -z)[-z]
+    Hint: you may compute all distances d(x,S), for every x in P, sort them, exclude the z largest distances, and return the largest among the remaining ones. Note that in this case we are not using weights!
+    params:
+    ::inputPoints (list of tuples): input points
+    ::S (list of tuples): centers
+    ::z (int): number of outliers
+    """
+    distances = np.zeros(shape=(len(inputPoints), len(S)))
+    for i in range(len(inputPoints)):
+        for j in range(len(S)):
+            distances[i, j] = euclidean(inputPoints[i], S[j])
+    distances = distances.flatten()
+    distances.sort()
+    return max(distances[:-z])
+
+
