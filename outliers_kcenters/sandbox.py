@@ -57,7 +57,7 @@ def main ():
     alg_time = time.time() - t0
 
     # DEBUG
-    # print("solution: ", solution)
+    print("solution: ", solution)
 
     #initial guess for r
     P = inputPoints[:k+z+1]
@@ -66,7 +66,7 @@ def main ():
 
     # Run ComputeObjective(inputPoints,solution,z) and save the output in a variable called objective.
     from kcenters import ComputeObjective
-    objective = ComputeObjective(inputPoints,solution,z)
+    objective = ComputeObjective(inputPoints,solution, z)
 
     # output
     print("Input size n = {}".format(len(inputPoints)))
@@ -77,6 +77,21 @@ def main ():
     print("Number of guesses = {}".format(GetGuessesGlobal()))
     print("Objective function = {}".format(objective))
     print("Time of SeqWeightedOutliers = {}".format(alg_time))
+
+    # plot 2dimensional points and centers
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    if len(inputPoints[0]) == 2:
+        sns.set_theme(style="white", font_scale=2)
+        fig, ax = plt.subplots(figsize=(10,10))
+        colorPoints = "darkorange"
+        colorCenters = "teal"
+        ms = 120
+        sns.scatterplot(x=[i[0] for i in inputPoints], y=[i[1] for i in inputPoints], 
+                        color=colorPoints, ax=ax, s=ms)
+        sns.scatterplot(x=[i[0] for i in solution], y=[i[1] for i in solution], color=colorCenters, 
+                        ax=ax, s=ms)
+        fig.savefig("kcenter_k"+str(k)+"_z"+str(z)+"_test.png", bbox_inches='tight')
 
 if __name__ == "__main__":
     main()

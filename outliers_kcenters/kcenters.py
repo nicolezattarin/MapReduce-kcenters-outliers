@@ -80,7 +80,7 @@ def SeqWeightedOutliers(inputPoints, Weights, k, z, alpha, maxiter=1000, verbose
     global guesses 
     guesses = 1
     while guesses < maxiter:
-        if verbose: print ('iteration:', guesses)
+        print ('\nGuess :', guesses)
 
         import copy
         Z = copy.copy(inputPoints) # set of uncovered points, it is initialized with the entire set of points
@@ -89,7 +89,7 @@ def SeqWeightedOutliers(inputPoints, Weights, k, z, alpha, maxiter=1000, verbose
                                    # initialized as sum of the weights of the entire dataset
 
         while len(S) < k and W_Z > 0: # while we didnt fill the set of centers and there are uncovered points
-            if verbose: print ('\nlen(S):', len(S))
+            print ('Finding center :', len(S))
             max = 0
             for x in inputPoints: # for each point in the set 
                 # find the points in Z which are in a ball centered at x with radius (1+2*alpha)*r
@@ -146,6 +146,7 @@ def ComputeObjective(inputPoints, S, z):
             distances[i, j] = euclidean(inputPoints[i], S[j])
     distances = distances.flatten()
     distances.sort()
-    return max(distances[:-z])
+    if z == 0: return max(distances)
+    else: return max(distances[:-z])
 
 
