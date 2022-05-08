@@ -91,6 +91,21 @@ def main ():
                         color=colorPoints, ax=ax, s=ms)
         sns.scatterplot(x=[i[0] for i in solution], y=[i[1] for i in solution], color=colorCenters, 
                         ax=ax, s=ms)
+
+        # plot distances
+        distances = np.zeros(shape=(len(inputPoints), len(solution))) #rows are points, columns are centers 
+        for i in range(len(inputPoints)):
+            for j in range(len(solution)):
+                distances[i, j] = euclidean(inputPoints[i], solution[j])
+                
+        for i in range(len(inputPoints)):
+            center = solution[np.argmin(distances[i, :])]
+            # DEBUG
+            # print("center of point {} is {}".format(inputPoints[i], center))
+            sns.lineplot(x=[inputPoints[i][0], center[0]], y=[inputPoints[i][1], center[1]],
+                            color='black', ax=ax, linewidth=1.5, linestyle='--', markersize=0)
+        
+
         fig.savefig("kcenter_k"+str(k)+"_z"+str(z)+"_test.png", bbox_inches='tight')
 
 if __name__ == "__main__":

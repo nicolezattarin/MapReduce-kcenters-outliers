@@ -114,6 +114,7 @@ def SeqWeightedOutliers(inputPoints, Weights, k, z, alpha, maxiter=1000, verbose
                 W_Z -= Weights[inputPoints.index(y)]
             if verbose:
                 print ('Z:', Z, ' W_Z:', W_Z, '\n')
+            print("WZ:", W_Z)
 
         if W_Z <= z: return S
         else: r*=2
@@ -144,7 +145,11 @@ def ComputeObjective(inputPoints, S, z):
     for i in range(len(inputPoints)):
         for j in range(len(S)):
             distances[i, j] = euclidean(inputPoints[i], S[j])
-    DistFromSet = [min(distances[i][:]) for i in range(len(inputPoints))]
+    DistFromSet = []  
+    for i in range(len(inputPoints)):
+        distSet = min(np.sort(distances[i][:]))
+        DistFromSet.append(distSet)
+
     DistFromSet.sort()
     if z == 0: return max(DistFromSet)
     else: return max(DistFromSet[:-z])
