@@ -140,13 +140,13 @@ def ComputeObjective(inputPoints, S, z):
     ::S (list of tuples): centers
     ::z (int): number of outliers
     """
-    distances = np.zeros(shape=(len(inputPoints), len(S)))
+    distances = np.zeros(shape=(len(inputPoints), len(S))) #rows are points, columns are centers 
     for i in range(len(inputPoints)):
         for j in range(len(S)):
             distances[i, j] = euclidean(inputPoints[i], S[j])
-    distances = distances.flatten()
-    distances.sort()
-    if z == 0: return max(distances)
-    else: return max(distances[:-z])
+    DistFromSet = [min(distances[i][:]) for i in range(len(inputPoints))]
+    DistFromSet.sort()
+    if z == 0: return max(DistFromSet)
+    else: return max(DistFromSet[:-z])
 
 
