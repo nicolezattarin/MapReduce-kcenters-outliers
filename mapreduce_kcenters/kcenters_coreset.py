@@ -11,7 +11,7 @@ import os,sys
 os.environ['PYSPARK_PYTHON'] = sys.executable
 os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
-def MR_kCenterOutliers(points, k, z, L):
+def MR_kCenterOutliers(points, k, z, L): # L NON USATO??!!
     """
     run MR k-center with outliers algorithm
     params:
@@ -228,9 +228,12 @@ def ComputeObjective(points, centers, outliers):
     return:
         objective (float): objective function
     """
-    # compute the objective function with a strategy that tries to optimize the memory usage
+    # compute the objective function with a strategy that tries to optimize the memory usage,
+    #  i.e. brute bìfroce approach
 
     points = points.collect()
+
+
     P_clean = [x for x in points if x not in centers]
     dist_from_S = []
 
