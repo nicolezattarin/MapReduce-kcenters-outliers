@@ -19,4 +19,6 @@ A 2 dimensional example follows:
   <img src="outliers_kcenters/kcenter_k3_z1_test.png" width="400" />
 </p>
 
+In [outliers_kcenters_optimized](https://github.com/nicolezattarin/Big-Data-Computing/tree/main/outliers_kcenters_optimized) we provide the optimized version of the algorithm, which makes use od dynamic programming.
+
 
