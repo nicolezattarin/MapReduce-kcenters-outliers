@@ -11,6 +11,7 @@ To install pyspark on your local machine, please refer to the [official installa
 
 # Overview
 ### k-centers with outliers:
+
 **Standard version**
 
 In [sequential](https://github.com/nicolezattarin/MapReduce-kcenters-outliers/tree/main/sequential) we develop a sequential algorithm to find the centers of clusters in presence of outliers.
@@ -21,6 +22,7 @@ A 2 dimensional example follows:
 </p>
 
 **Optimized version**
+
 Even tought the first version of the code is more intuitive, it is not the most efficient one. Nevertheless, to deal with big data, an algorithm must not only take care of memory, but also be fast. In [sequential_optimized](https://github.com/nicolezattarin/MapReduce-kcenters-outliers/tree/main/sequential_optimized) we provide the optimized version of the algorithm, in which the speed up is achieved by applying a dynamic programming approach.
 
 
