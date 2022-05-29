@@ -17,7 +17,7 @@ In [sequential](https://github.com/nicolezattarin/MapReduce-kcenters-outliers/tr
 Given a set P of points and two integers k and z, the model finds the k centers of clusters in P, with at most z outliers. A method to compute the loss function is also provided.
 A 2 dimensional example follows:
 <p align="center">
-  <img src="outliers_kcenters/kcenter_k3_z1_test.png" width="400" />
+  <img src="sequential/kcenter_k3_z1_test.png" width="400" />
 </p>
 
 *** Optimized version ***
