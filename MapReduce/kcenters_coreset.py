@@ -218,27 +218,22 @@ def euclidean(point1,point2):
         res +=  diff*diff
     return math.sqrt(res)
 
-def ComputeObjective(points, centers, outliers):
+def ComputeObjective(P,S,z):
     """
     Compute the objective function
     params:
-        points (RDD): points
-        centers (list): list of centers
-        outliers (int): number of outliers
+        P (RDD): list of points
+        S (list): list of centers
+        z (int): number of outliers
     return:
         objective (float): objective function
+
+    Note that the function gets a RDD of points and a list of centers.
+
     """
-    # compute the objective function with a strategy that tries to optimize the memory usage,
-    #  i.e. brute bìfroce approach
-
-    points = points.collect()
-
-
-    P_clean = [x for x in points if x not in centers]
-    dist_from_S = []
-
-    for x in P_clean:
-        dist_from_S.append(min([euclidean(x, s) for s in centers]))
-    dist_from_S.sort()
-    if outliers == 0: return max(dist_from_S)
-    else: return max(dist_from_S[:-outliers])
+    #for each point in P compute the distance from S with mapreduce
+    dist_fromS = P.mapPartitions(lambda x: map(lambda y: min([euclidean(y,z) for z in S]), x))
+    #sort the distances
+    dist_fromS = dist_fromS.sortBy(lambda x: x)
+    #compute the maximum of the first n-z distances
+    return dist_fromS.take(P.count()-z)[-1]
